@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <title>BiSign | Giving Voice to the Voiceless</title>
+    <meta
+      name="description"
+      content="AI-Powered Indian Sign Language to Multilingual Speech Conversion — zero-cost, offline-capable, for mute individuals across India."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/src/style.css" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="/bisign-icon.svg" />
+    <link rel="apple-touch-icon" href="/bisign-icon.svg" />
+  </head>
+
+  <body>
+    <div id="app">
+      <!-- Sidebar / Controls -->
+      <aside class="sidebar glass">
+        <header>
+          <div class="logo-container">
+            <div class="logo-icon">B</div>
+            <h1>BiSign</h1>
+          </div>
+          <p class="tagline">Giving Voice to the Voiceless</p>
+        </header>
+
+        <nav class="controls">
+          <div class="control-group">
+            <label for="language-select">Output Language</label>
+            <select
+              id="language-select"
+              class="glass-input"
+              aria-label="Output language"
+            >
+              <option value="te-IN">Telugu (తెలుగు)</option>
+              <option value="hi-IN">Hindi (हिन्दी)</option>
+              <option value="en-US">English</option>
+              <option value="ta-IN">Tamil (தமிழ்)</option>
+              <option value="kn-IN">Kannada (ಕನ್ನಡ)</option>
+              <option value="bn-IN">Bengali (বাংলা)</option>
+              <option value="ml-IN">Malayalam (മലയാളം)</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label>Speech Strategy</label>
+            <div class="toggle-switch">
+              <input type="checkbox" id="auto-speak" checked />
+              <label for="auto-speak">Automatic Speech</label>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label for="confidence-range">Prediction Stability</label>
+            <input
+              id="confidence-range"
+              type="range"
+              min="1"
+              max="20"
+              value="8"
+            />
+            <div class="confidence-text">
+              Stable frames: <span id="confidence-value">8</span>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label for="mode-select">Mode</label>
+            <select id="mode-select" class="glass-input">
+              <option value="auto">Auto (model if available)</option>
+              <option value="demo">Demo (heuristics)</option>
+            </select>
+          </div>
+
+          <div class="stats glass">
+            <div class="stat-item">
+              <span class="label">FPS</span>
+              <span id="fps-counter" class="value">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="label">Accuracy</span>
+              <span id="accuracy-value" class="value">0%</span>
+            </div>
+            <div class="stat-item">
+              <span class="label">Status</span>
+              <span id="status-indicator" class="status-dot"></span>
+              <span id="status-text" class="value">Initializing...</span>
+            </div>
+          </div>
+        </nav>
+
+        <footer>
+          <button id="clear-btn" class="secondary-btn">Clear Transcript</button>
+          <button id="camera-toggle" class="primary-btn">Toggle Camera</button>
+        </footer>
+      </aside>
+
+      <!-- Main Feed -->
+      <main class="main-content">
+        <div class="camera-wrapper glass">
+          <video id="webcam" autoplay webkit-playsinline muted></video>
+          <canvas id="output_canvas"></canvas>
+          <div class="gesture-overlay">
+            <div id="predicted-sign" class="prediction-pill">Waiting...</div>
+          </div>
+          <div id="loading-overlay" class="loading-overlay">
+            <div class="spinner"></div>
+            <p>Loading AI Models...</p>
+          </div>
+        </div>
+
+        <div class="transcript-container glass">
+          <div class="transcript-header">
+            <h2>Live Transcript</h2>
+            <div class="indicator">LIVE</div>
+          </div>
+          <div id="transcript-body" class="transcript-body">
+            <div class="placeholder">
+              Signs will appear here as you gesture...
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Scripts -->
+    <!-- Camera consent modal -->
+    <style>
+      .consent-modal {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 40;
+      }
+      .consent-card {
+        max-width: 420px;
+        padding: 20px;
+        text-align: left;
+        gap: 12px;
+      }
+      .consent-actions {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 12px;
+      }
+      .hidden {
+        display: none !important;
+      }
+    </style>
+
+    <div id="consent-modal" class="consent-modal hidden" aria-hidden="true">
+      <div
+        class="glass consent-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="consent-title"
+      >
+        <h3 id="consent-title">Camera Permission</h3>
+        <p>
+          BiSign needs access to your camera to detect hand gestures. Video is
+          processed locally in your browser and not uploaded.
+        </p>
+        <div class="consent-actions">
+          <button id="consent-decline" class="secondary-btn">Decline</button>
+          <button id="consent-allow" class="primary-btn">Allow Camera</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const modal = document.getElementById('consent-modal');
+        const allowBtn = document.getElementById('consent-allow');
+        const declineBtn = document.getElementById('consent-decline');
+
+        function show() {
+          modal.classList.remove('hidden');
+          modal.setAttribute('aria-hidden', 'false');
+        }
+        function hide() {
+          modal.classList.add('hidden');
+          modal.setAttribute('aria-hidden', 'true');
+        }
+
+        // Show modal if consent not yet given
+        if (localStorage.getItem('bisign_camera_consent') !== 'true') {
+          show();
+        }
+
+        allowBtn.addEventListener('click', () => {
+          localStorage.setItem('bisign_camera_consent', 'true');
+          hide();
+          window.dispatchEvent(new CustomEvent('bisign:consent-granted'));
+        });
+
+        declineBtn.addEventListener('click', () => {
+          localStorage.setItem('bisign_camera_consent', 'false');
+          hide();
+        });
+      })();
+    </script>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

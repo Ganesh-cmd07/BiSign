@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="192" y2="192" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#8b5cf6"/>
+    </linearGradient>
+    <linearGradient id="wave" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#c4b5fd" stop-opacity="0.7"/>
+    </linearGradient>
+  </defs>
+  <!-- Background rounded rect -->
+  <rect width="192" height="192" rx="40" fill="url(#bg)"/>
+  <!-- Hand palm -->
+  <rect x="72" y="90" width="48" height="60" rx="10" fill="white" fill-opacity="0.95"/>
+  <!-- Fingers -->
+  <rect x="72" y="52" width="12" height="44" rx="6" fill="white" fill-opacity="0.95"/>
+  <rect x="88" y="44" width="12" height="52" rx="6" fill="white" fill-opacity="0.95"/>
+  <rect x="104" y="48" width="12" height="48" rx="6" fill="white" fill-opacity="0.95"/>
+  <rect x="120" y="56" width="12" height="40" rx="6" fill="white" fill-opacity="0.95"/>
+  <!-- Thumb -->
+  <rect x="52" y="74" width="24" height="12" rx="6" fill="white" fill-opacity="0.95"/>
+  <!-- Signal arcs (sound waves) -->
+  <path d="M148 80 Q158 96 148 112" stroke="url(#wave)" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <path d="M156 70 Q172 96 156 122" stroke="url(#wave)" stroke-width="4" stroke-linecap="round" fill="none" stroke-opacity="0.6"/>
+</svg>

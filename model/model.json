@@ -1,0 +1,11 @@
+{
+  "format": "layers-model",
+  "generatedBy": "tfjs-converter",
+  "convertedBy": "placeholder",
+  "modelTopology": {
+    "class_name": "Model",
+    "keras_version": "2.9.0",
+    "config": {}
+  },
+  "weightsManifest": []
+}
