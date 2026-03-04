@@ -1,0 +1,5 @@
+Analyzing BiSign...                                             
+
+warning - Unused import: 'package:flutter/services.dart' - lib\services\sign_classifier_service.dart:1:8 - unused_import
+
+1 issue found. (ran in 2.2s)

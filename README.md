@@ -64,9 +64,9 @@ BiSign/
 ## Build Phases Followed
 
 - [x] **Phase A — Foundation** (Project architecture, Home/Dir1/Dir2 UI, Service Scaffolding, Dependency resolution)
-- [ ] **Phase B — Direction 1 Core** (Real-time MediaPipe Hand landmark detection, TFLite sign classification, TTS)
-- [ ] **Phase C — Direction 2 Core** (Offline Vosk STT, JSON landmark parsing, Canvas Animation Renderer)
-- [ ] **Phase D — NLP and Languages** (IndicNLP ISL rule grammar reordering for Telugu, Hindi, Tamil, Kannada)
+- [x] **Phase B — Direction 1 Core** (Real-time MediaPipe Hand landmark detection, TFLite sign classification, TTS)
+- [x] **Phase C — Direction 2 Core** (Offline Vosk STT, JSON landmark parsing, Canvas Animation Renderer)
+- [x] **Phase D — NLP and Languages** (IndicNLP ISL rule grammar reordering for Telugu, Hindi, Tamil, Kannada)
 - [ ] **Phase E — Optimization** (Memory optimization for 2GB RAM Androids, App Size compression, APK Generation)
 
 ---

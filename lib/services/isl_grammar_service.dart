@@ -1,74 +1,61 @@
 import '../utils/constants.dart';
 
 /// IslGrammarService
-/// Converts English/regional language sentences to ISL word order.
-/// ISL grammar: Subject → Object → Verb (SOV)
+/// Phase D implementation. Converts continuous vernacular sentences
+/// into proper ISL Subject-Object-Verb (SOV) structural order.
 class IslGrammarService {
-  /// Main entry: reorder sentence for ISL
-  String reorder(String text) {
-    if (text.isEmpty) return text;
+  /// Common action verbs used in ISL
+  static const List<String> verbs = [
+    'want', 'drink', 'eat', 'go', 'come', 'help', 'need',
+    'see', 'look', 'make', 'know', 'think', 'take', 'give', 'use',
+    'speak', 'talk', 'walk', 'stop', 'play', 'work', 'buy', 'please'
+  ];
 
-    // Lowercase and split
-    final words = text.toLowerCase().trim().split(RegExp(r'\s+'));
+  String reorder(String sentence) {
+    if (sentence.isEmpty) return '';
 
-    // Step 1: Remove articles (a, an, the)
-    final noArticles =
-        words.where((w) => !AppConstants.articles.contains(w)).toList();
+    // Clean punctuation and lowercase
+    String cleanSentence = sentence.toLowerCase().replaceAll(RegExp(r'[^\w\s]'), '');
+    List<String> words = cleanSentence.split(' ').where((w) => w.isNotEmpty).toList();
 
-    // Step 2: Remove helping verbs (is, are, was, etc.)
-    final noHelpingVerbs = noArticles
-        .where((w) => !AppConstants.helpingVerbs.contains(w))
-        .toList();
+    // 1. Remove articles (Rule 2)
+    words.removeWhere((word) => AppConstants.articles.contains(word));
 
-    // Step 3: Check if question
-    final isQuestion = noHelpingVerbs.isNotEmpty &&
-        AppConstants.questionWords.contains(noHelpingVerbs.first);
+    // 2. Remove helping verbs (Rule 3)
+    words.removeWhere((word) => AppConstants.helpingVerbs.contains(word));
 
-    if (isQuestion) {
-      // Keep question word at beginning, reorder rest
-      final qWord = noHelpingVerbs.first;
-      final rest = noHelpingVerbs.sublist(1);
-      final reordered = _applySOV(rest);
-      return ([qWord] + reordered).join(' ');
-    }
+    if (words.isEmpty) return '';
 
-    return _applySOV(noHelpingVerbs).join(' ');
-  }
+    // 3. Move verbs to end (Rule 1)
+    List<String> verbsInSentence = [];
+    List<String> otherWords = [];
 
-  /// Apply SOV reordering:
-  /// Heuristic: identify verb candidates (last meaningful word after removing
-  /// articles/helping verbs is likely the main verb or action word).
-  List<String> _applySOV(List<String> words) {
-    if (words.length <= 2) return words;
-
-    // Common ISL verbs / action words to move to end
-    final verbCandidates = {
-      'want', 'need', 'like', 'eat', 'drink', 'go', 'come', 'give',
-      'take', 'see', 'hear', 'speak', 'write', 'read', 'help', 'buy',
-      'sell', 'work', 'study', 'learn', 'teach', 'play', 'run', 'walk',
-      'sit', 'stand', 'sleep', 'wake', 'wash', 'cook', 'feel', 'know',
-      'understand', 'wait', 'open', 'close', 'start', 'stop', 'show',
-    };
-
-    // Find first verb in the list
-    int verbIndex = -1;
-    for (int i = 0; i < words.length; i++) {
-      if (verbCandidates.contains(words[i])) {
-        verbIndex = i;
-        break;
+    for (String word in words) {
+      if (verbs.contains(word)) {
+        verbsInSentence.add(word);
+      } else {
+        otherWords.add(word);
       }
     }
 
-    if (verbIndex < 0) return words; // No verb found, keep as is
+    // 4. Keep question words at the beginning (Rule 4)
+    List<String> questions = [];
+    List<String> remaining = [];
 
-    // Move verb to end: [before_verb] + [after_verb] + [verb]
-    final verb = words[verbIndex];
-    final rest = [...words.sublist(0, verbIndex), ...words.sublist(verbIndex + 1)];
-    return [...rest, verb];
-  }
+    for (String word in otherWords) {
+      if (AppConstants.questionWords.contains(word)) {
+        questions.add(word);
+      } else {
+        remaining.add(word);
+      }
+    }
 
-  /// Get individual signs/words for animation
-  List<String> getSignWords(String islText) {
-    return islText.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
+    // Assemble final SOV sentence
+    List<String> finalSentence = [];
+    finalSentence.addAll(questions);       // Question words first
+    finalSentence.addAll(remaining);       // Subjects / Objects middle
+    finalSentence.addAll(verbsInSentence); // Verbs last
+
+    return finalSentence.join(' ').trim();
   }
 }
