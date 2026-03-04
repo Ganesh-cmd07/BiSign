@@ -1,140 +1,73 @@
-# BiSign
+# BiSign - Giving Voice to the Voiceless
 
-BiSign is a client-side Progressive Web App that detects hand gestures (Indian Sign Language) and speaks them in regional languages.
+BiSign is a real-time, AI-powered, zero-cost, offline-capable bidirectional Indian Sign Language (ISL) communication Android application. It genuinely helps mute, deaf, and deaf-mute individuals in rural India communicate freely and independently.
 
-## Run (development)
+## Features
 
-Requires Node.js and npm.
+- **Direction 1 — Sign to Speech:** Translates Indian Sign Language gestures into regional spoken language (Telugu, Hindi, Tamil, Kannada) using MediaPipe and TensorFlow Lite.
+- **Direction 2 — Speech to ISL Signs:** Converts regional spoken language into smooth ISL sign animations using completely offline speech recognition (Vosk/Whisper) and lightweight JSON-based landmark rendering.
+- **100% Offline Capability:** Works completely offline after initial setup, ensuring privacy, zero data cost, and reliability in rural areas.
+- **Extremely Low Storage:** Utilizes JSON-based landmark sequences for rendering signs instead of heavy video files, consuming less than 4MB for over 500 signs.
+- **Highly Accessible UI:** Simple, big buttons, high contrast, non-literate friendly design.
 
-```bash
-npm install
-npm run dev
-```
+## Technology Stack
 
-Open http://localhost:5173 (Vite default) and allow camera access.
+- **Frontend:** Flutter (Dart)
+- **AI / Hand Tracking on Device:** MediaPipe Hands
+- **Sign Classification:** TensorFlow Lite (`tflite_flutter`)
+- **Speech Recognition (Offline):** Vosk / Whisper (`vosk_flutter`)
+- **Speech Synthesis:** Android TTS (`flutter_tts`)
 
-## Notes
+## Setup & Installation
 
-- The project uses MediaPipe Hands and TensorFlow.js. To enable accurate classification, place a trained TF.js model at `/model/model.json` (and supporting files in `/model/`). If not present, the app uses geometric heuristics as a demo fallback.
-- Service worker caches only the local app shell and caches large CDN assets at runtime.
-- Speech uses the Web Speech API; availability of regional voices depends on the platform/browser.
+### Requirements
+- Flutter SDK (>= 3.0.0)
+- Android Studio or VS Code with Flutter extension
+- An Android device (Minimum 2GB RAM required for smooth performance on budget phones)
 
-## Code quality & tests
+### Steps to Run
+1. Clone the repository.
+2. Navigate to the project directory: 
+   ```bash
+   cd BiSign
+   ```
+3. Install Flutter dependencies: 
+   ```bash
+   flutter pub get
+   ```
+4. Run the app on a connected Android device:
+   ```bash
+   flutter run
+   ```
 
-Run lint and tests (after `npm install`):
-
-```bash
-npm run lint
-npm test
-```
-
-I added basic ESLint/Prettier and a Jest test for `src/nlp.js` as a smoke test. Install dev dependencies with `npm install` before running.
-
-## Runtime Configuration
-
-The app stores user preferences in browser `localStorage`:
-- `bisign_camera_consent`: camera permission acknowledgment (true/false).
-- `bisign_confidence`: prediction stability threshold (1–20 frames; default 8). Adjust via the **Prediction Stability** slider.
-- `bisign_mode`: classification mode (`auto` for model or heuristic fallback, `demo` for heuristics only). Adjust via the **Mode** dropdown.
-
-## Model Setup
-
-### Using Heuristics (default)
-
-The app detects basic gestures (Hello, Peace, Call Help) using geometric heuristics. No model file required.
-
-### Using a Trained TensorFlow.js Model
-
-1. **Prepare your model** (Keras `.h5`, TensorFlow SavedModel, or already-converted TFJS):
-
-   - If Keras `.h5`:
-     ```bash
-     pip install tensorflowjs
-     tensorflowjs_converter --input_format=keras model.h5 model/
-     ```
-   - If TensorFlow SavedModel:
-     ```bash
-     tensorflowjs_converter --input_format=tf_saved_model /path/to/saved_model model/
-     ```
-   - If already TFJS: Copy `model.json` and weight shard files to `model/`.
-
-2. **Verify** your `model/` folder contains `model.json` and `.bin` weight shard files.
-
-3. **Restart** the dev server or reload the app. The classifier will attempt to load `/model/model.json` on startup.
-
-4. **Check** browser console for `Sign Classifier: TF model loaded.` (success) or fallback warning.
-
-## CI/CD with GitHub Actions
-
-A GitHub Actions workflow runs automatically on push/PR (`.github/workflows/ci.yml`):
-- Installs dependencies
-- Runs ESLint
-- Runs Jest tests
-- Builds production bundle
-
-View results in the **Actions** tab on GitHub.
-
-## Build & Deploy
-
-### Build for production:
-
-```bash
-npm run build
-```
-
-Output is in `dist/`. Files can be deployed to:
-- **Netlify**: Drag `dist/` to Netlify drop zone, or connect Git repo.
-- **Vercel**: Connect Git repo; auto-deploys on push.
-- **GitHub Pages**: Push `dist/` to `gh-pages` branch or use GitHub Actions to build & deploy.
-- **Static host** (AWS S3, Firebase Hosting, etc.): Upload `dist/` contents.
-
-### HTTPS requirement
-
-- Camera access (`getUserMedia`) requires **HTTPS** (or `localhost` for dev). Ensure your hosting provider supports HTTPS.
-
-### Service Worker
-
-- The PWA installs a service worker (`sw.js`) to cache app shell and CDN assets at runtime.
-- Users can work offline after the first visit.
-- To update the app, increment `CACHE_NAME` in `sw.js` and redeploy.
-
-## Troubleshooting
-
-| Issue | Solution |
-|-------|----------|
-| Camera not starting | Check HTTPS (or localhost), browser permissions, console errors. |
-| No predictions | Ensure good lighting; try adjusting **Prediction Stability** slider. |
-| Model not loading | Verify `model/model.json` exists; check browser console. Falls back to heuristics if missing. |
-| Speech not working | Check if browser/OS has regional voices available; some browsers/languages have limited support. |
-| Service worker issues | Clear browser cache (`Ctrl+Shift+Delete`), reload page. |
-
-## Project Structure
+## Folder Structure
 
 ```
 BiSign/
-├── src/
-│   ├── main.js           # App entry, camera, gesture processing
-│   ├── model.js          # SignClassifier (TF.js or heuristics)
-│   ├── nlp.js            # ISL grammar processor
-│   ├── tts.js            # Speech synthesis (Web Speech API)
-│   └── style.css         # UI styles (glassmorphism design)
-├── tests/
-│   └── nlp.test.js       # Jest smoke test
-├── model/                # TF.js model files (if any)
-├── public/               # Static assets (if any)
-├── index.html            # App shell + consent modal
-├── sw.js                 # Service worker (PWA)
-├── manifest.json         # PWA metadata
-├── .github/workflows/ci.yml  # GitHub Actions CI
-├── .eslintrc.json        # ESLint config
-├── .prettierrc           # Prettier config
-├── jest.config.cjs       # Jest config
-├── package.json          # Dependencies & scripts
-└── README.md             # This file
+├── android/               # Android native configuration
+├── assets/
+│   ├── fonts/             # NotoSans fonts
+│   ├── models/            # TensorFlow Lite models (Sign Classification)
+│   ├── signs/             # JSON landmark files for ISL animations
+│   └── vosk/              # Vosk offline speech recognition models
+├── lib/
+│   ├── models/            # Data models
+│   ├── screens/           # UI Screens (Home, Direction 1, Direction 2)
+│   ├── services/          # Core logic (TFLite, MediaPipe, NLP, TTS, STT)
+│   ├── utils/             # App theme, constants, reordering rules
+│   ├── widgets/           # Reusable UI components (Canvas, Overlays)
+│   └── main.dart          # App entry point
+├── test/                  # Unit and widget tests
+└── pubspec.yaml           # Flutter dependencies
 ```
 
-## Next Steps
+## Build Phases Followed
 
-- Bundle or host a trained TF.js model and wire training artifacts
-- Improve grammar mapping and translation integration
-- Expand gestures and vocabulary in `src/model.js` heuristics or real model
+- [x] **Phase A — Foundation** (Project architecture, Home/Dir1/Dir2 UI, Service Scaffolding, Dependency resolution)
+- [ ] **Phase B — Direction 1 Core** (Real-time MediaPipe Hand landmark detection, TFLite sign classification, TTS)
+- [ ] **Phase C — Direction 2 Core** (Offline Vosk STT, JSON landmark parsing, Canvas Animation Renderer)
+- [ ] **Phase D — NLP and Languages** (IndicNLP ISL rule grammar reordering for Telugu, Hindi, Tamil, Kannada)
+- [ ] **Phase E — Optimization** (Memory optimization for 2GB RAM Androids, App Size compression, APK Generation)
+
+---
+*Built with deep responsibility to ensure no one is forced to live in silence.*
