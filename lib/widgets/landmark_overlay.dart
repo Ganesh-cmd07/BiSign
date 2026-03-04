@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../utils/app_theme.dart';
-import '../utils/constants.dart';
 
 /// LandmarkOverlay
 /// Draws hand skeleton on top of camera preview.
@@ -40,7 +39,7 @@ class _LandmarkPainter extends CustomPainter {
     if (landmarks.isEmpty || landmarks.length < 21) return;
 
     final connectionPaint = Paint()
-      ..color = AppTheme.primary.withOpacity(0.8)
+      ..color = AppTheme.primary.withValues(alpha: 0.8)
       ..strokeWidth = 2.5
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
@@ -84,7 +83,7 @@ class _LandmarkPainter extends CustomPainter {
           pos,
           radius + 4,
           Paint()
-            ..color = AppTheme.secondary.withOpacity(0.2)
+            ..color = AppTheme.secondary.withValues(alpha: 0.2)
             ..style = PaintingStyle.fill,
         );
       }

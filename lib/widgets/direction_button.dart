@@ -65,18 +65,18 @@ class _DirectionButtonState extends State<DirectionButton>
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                widget.color.withOpacity(0.15),
-                widget.color.withOpacity(0.05),
+                widget.color.withValues(alpha: 0.15),
+                widget.color.withValues(alpha: 0.05),
               ],
             ),
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: widget.color.withOpacity(0.4),
+              color: widget.color.withValues(alpha: 0.4),
               width: 1.5,
             ),
             boxShadow: [
               BoxShadow(
-                color: widget.color.withOpacity(0.2),
+                color: widget.color.withValues(alpha: 0.2),
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),
@@ -89,10 +89,10 @@ class _DirectionButtonState extends State<DirectionButton>
                 width: 70,
                 height: 70,
                 decoration: BoxDecoration(
-                  color: widget.color.withOpacity(0.15),
+                  color: widget.color.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                   border: Border.all(
-                    color: widget.color.withOpacity(0.5),
+                    color: widget.color.withValues(alpha: 0.5),
                     width: 2,
                   ),
                 ),
@@ -131,7 +131,7 @@ class _DirectionButtonState extends State<DirectionButton>
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
-                        color: widget.color.withOpacity(0.1),
+                        color: widget.color.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
@@ -150,7 +150,7 @@ class _DirectionButtonState extends State<DirectionButton>
               // Arrow
               Icon(
                 Icons.arrow_forward_ios_rounded,
-                color: widget.color.withOpacity(0.7),
+                color: widget.color.withValues(alpha: 0.7),
                 size: 20,
               ),
             ],

@@ -1,0 +1,8 @@
+Analyzing BiSign...                                             
+
+   info - Use interpolation to compose strings and values - lib\screens\sign_to_speech_screen.dart:107:26 - prefer_interpolation_to_compose_strings
+warning - The value of the field '_rng' isn't used - lib\services\sign_animation_service.dart:14:16 - unused_field
+  error - Undefined name '_currentLanguage' - lib\services\tts_service.dart:13:5 - undefined_identifier
+  error - Undefined name '_currentLanguage' - lib\services\tts_service.dart:57:5 - undefined_identifier
+
+4 issues found. (ran in 41.0s)

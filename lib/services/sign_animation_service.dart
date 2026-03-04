@@ -11,7 +11,6 @@ import '../utils/constants.dart';
 class SignAnimationService {
   bool _isInitialized = false;
   final Map<String, List<Map<String, dynamic>>> _signCache = {};
-  final Random _rng = Random();
 
   Future<void> initialize() async {
     // Phase C: Preload sign index from assets

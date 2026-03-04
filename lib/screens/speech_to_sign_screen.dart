@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import '../utils/app_theme.dart';
 import '../utils/constants.dart';
 import '../services/stt_service.dart';
@@ -181,7 +180,7 @@ class _SpeechToSignScreenState extends State<SpeechToSignScreen>
                 color: AppTheme.surfaceLight,
                 shape: BoxShape.circle,
                 border: Border.all(
-                    color: AppTheme.secondary.withOpacity(0.3), width: 1),
+                    color: AppTheme.secondary.withValues(alpha: 0.3), width: 1),
               ),
               child: const Icon(Icons.arrow_back_rounded,
                   color: Colors.white, size: 22),
@@ -204,10 +203,10 @@ class _SpeechToSignScreenState extends State<SpeechToSignScreen>
               child: Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: AppTheme.secondary.withOpacity(0.15),
+                  color: AppTheme.secondary.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                   border: Border.all(
-                      color: AppTheme.secondary.withOpacity(0.4), width: 1),
+                      color: AppTheme.secondary.withValues(alpha: 0.4), width: 1),
                 ),
                 child: const Icon(Icons.replay_rounded,
                     color: AppTheme.secondary, size: 22),
@@ -225,12 +224,12 @@ class _SpeechToSignScreenState extends State<SpeechToSignScreen>
         color: AppTheme.surface,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: AppTheme.secondary.withOpacity(0.3),
+          color: AppTheme.secondary.withValues(alpha: 0.3),
           width: 1.5,
         ),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.secondary.withOpacity(0.1),
+            color: AppTheme.secondary.withValues(alpha: 0.1),
             blurRadius: 20,
             spreadRadius: 2,
           ),
@@ -256,7 +255,7 @@ class _SpeechToSignScreenState extends State<SpeechToSignScreen>
           Icon(
             Icons.pan_tool_rounded,
             size: 80,
-            color: AppTheme.secondary.withOpacity(0.3),
+            color: AppTheme.secondary.withValues(alpha: 0.3),
           ),
           const SizedBox(height: 20),
           Text(
@@ -298,13 +297,13 @@ class _SpeechToSignScreenState extends State<SpeechToSignScreen>
               color: isActive
                   ? AppTheme.secondary
                   : isDone
-                      ? AppTheme.secondary.withOpacity(0.2)
+                      ? AppTheme.secondary.withValues(alpha: 0.2)
                       : AppTheme.surfaceLight,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: isActive
                     ? AppTheme.secondary
-                    : AppTheme.secondary.withOpacity(0.2),
+                    : AppTheme.secondary.withValues(alpha: 0.2),
               ),
             ),
             child: Text(
@@ -405,7 +404,7 @@ class _SpeechToSignScreenState extends State<SpeechToSignScreen>
                   boxShadow: [
                     BoxShadow(
                       color: (_isListening ? AppTheme.error : AppTheme.secondary)
-                          .withOpacity(0.5),
+                          .withValues(alpha: 0.5),
                       blurRadius: 20,
                       spreadRadius: 4,
                     ),

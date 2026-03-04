@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../utils/app_theme.dart';
-import '../utils/constants.dart';
 import '../widgets/language_selector.dart';
 import '../widgets/direction_button.dart';
 
@@ -115,7 +114,7 @@ class HomeScreen extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: AppTheme.primary.withOpacity(0.5),
+                color: AppTheme.primary.withValues(alpha: 0.5),
                 blurRadius: 30,
                 spreadRadius: 5,
               ),
@@ -173,7 +172,7 @@ class HomeScreen extends StatelessWidget {
               gradient: LinearGradient(
                 colors: [
                   Colors.transparent,
-                  AppTheme.primary.withOpacity(0.4),
+                  AppTheme.primary.withValues(alpha: 0.4),
                 ],
               ),
             ),
@@ -184,7 +183,7 @@ class HomeScreen extends StatelessWidget {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              border: Border.all(color: AppTheme.primary.withOpacity(0.3)),
+              border: Border.all(color: AppTheme.primary.withValues(alpha: 0.3)),
               borderRadius: BorderRadius.circular(20),
             ),
             child: const Text(
@@ -203,7 +202,7 @@ class HomeScreen extends StatelessWidget {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
-                  AppTheme.secondary.withOpacity(0.4),
+                  AppTheme.secondary.withValues(alpha: 0.4),
                   Colors.transparent,
                 ],
               ),

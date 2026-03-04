@@ -12,7 +12,7 @@ dependencies:
 
   # Camera & Media
   camera: ^0.10.5+9
-  permission_handler: ^11.3.1
+  permission_handler: ^10.2.0
 
   # TensorFlow Lite - Sign classification
   tflite_flutter: ^0.10.4
@@ -28,8 +28,8 @@ dependencies:
   shared_preferences: ^2.2.3
 
   # UI & Animation
-  lottie: ^3.1.2
-  google_fonts: ^6.2.1
+  lottie: ^3.0.0
+  google_fonts: ^3.0.1
 
   # Utilities
   logger: ^2.4.0

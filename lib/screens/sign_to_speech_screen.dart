@@ -103,8 +103,7 @@ class _SignToSpeechScreenState extends State<SignToSpeechScreen>
                     _confidence >= AppConstants.confidenceThreshold) {
                   _recognizedSign = sign;
                   if (!_recognizedSentence.endsWith(sign)) {
-                    _recognizedSentence =
-                        (_recognizedSentence + ' $sign').trim();
+                    _recognizedSentence = '$_recognizedSentence $sign'.trim();
                   }
                 }
               } else {
@@ -178,7 +177,7 @@ class _SignToSpeechScreenState extends State<SignToSpeechScreen>
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.7),
+                    Colors.black.withValues(alpha: 0.7),
                     Colors.transparent,
                   ],
                 ),
@@ -198,7 +197,7 @@ class _SignToSpeechScreenState extends State<SignToSpeechScreen>
                   begin: Alignment.bottomCenter,
                   end: Alignment.topCenter,
                   colors: [
-                    Colors.black.withOpacity(0.95),
+                    Colors.black.withValues(alpha: 0.95),
                     Colors.transparent,
                   ],
                 ),
@@ -276,10 +275,10 @@ class _SignToSpeechScreenState extends State<SignToSpeechScreen>
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.5),
+          color: Colors.black.withValues(alpha: 0.5),
           shape: BoxShape.circle,
           border:
-              Border.all(color: AppTheme.primary.withOpacity(0.5), width: 1),
+              Border.all(color: AppTheme.primary.withValues(alpha: 0.5), width: 1),
         ),
         child: const Icon(Icons.arrow_back_rounded,
             color: Colors.white, size: 24),
@@ -292,12 +291,12 @@ class _SignToSpeechScreenState extends State<SignToSpeechScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.6),
+        color: Colors.black.withValues(alpha: 0.6),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: isActive
-              ? AppTheme.success.withOpacity(0.7)
-              : AppTheme.primary.withOpacity(0.4),
+              ? AppTheme.success.withValues(alpha: 0.7)
+              : AppTheme.primary.withValues(alpha: 0.4),
         ),
       ),
       child: Row(
@@ -334,10 +333,10 @@ class _SignToSpeechScreenState extends State<SignToSpeechScreen>
               padding:
                   const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               decoration: BoxDecoration(
-                color: AppTheme.primary.withOpacity(0.2),
+                color: AppTheme.primary.withValues(alpha: 0.2),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                    color: AppTheme.primary.withOpacity(0.4), width: 1),
+                    color: AppTheme.primary.withValues(alpha: 0.4), width: 1),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -367,10 +366,10 @@ class _SignToSpeechScreenState extends State<SignToSpeechScreen>
             width: double.infinity,
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.7),
+              color: Colors.black.withValues(alpha: 0.7),
               borderRadius: BorderRadius.circular(16),
               border: Border.all(
-                  color: AppTheme.surfaceLight.withOpacity(0.5), width: 1),
+                  color: AppTheme.surfaceLight.withValues(alpha: 0.5), width: 1),
             ),
             child: Text(
               _recognizedSentence.isEmpty
@@ -404,7 +403,7 @@ class _SignToSpeechScreenState extends State<SignToSpeechScreen>
                       color: AppTheme.surfaceLight,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                          color: AppTheme.textSecondary.withOpacity(0.3)),
+                          color: AppTheme.textSecondary.withValues(alpha: 0.3)),
                     ),
                     child: const Icon(Icons.delete_outline_rounded,
                         color: AppTheme.textSecondary, size: 28),
@@ -435,7 +434,7 @@ class _SignToSpeechScreenState extends State<SignToSpeechScreen>
                       boxShadow: _recognizedSentence.isNotEmpty
                           ? [
                               BoxShadow(
-                                color: AppTheme.primary.withOpacity(0.4),
+                                color: AppTheme.primary.withValues(alpha: 0.4),
                                 blurRadius: 16,
                                 offset: const Offset(0, 4),
                               )

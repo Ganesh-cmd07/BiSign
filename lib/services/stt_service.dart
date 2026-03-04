@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../utils/app_theme.dart';
-import '../utils/constants.dart';
 
 /// SttService — Speech To Text using Vosk offline ASR
 /// Phase A: Returns mock text for UI testing.

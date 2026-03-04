@@ -8,10 +8,8 @@ import '../utils/constants.dart';
 class TtsService {
   FlutterTts? _tts;
   bool _isInitialized = false;
-  String _currentLanguage = 'te';
-
+  
   Future<void> initialize(String languageCode) async {
-    _currentLanguage = languageCode;
     _tts = FlutterTts();
 
     try {
@@ -55,7 +53,6 @@ class TtsService {
   }
 
   Future<void> setLanguage(String languageCode) async {
-    _currentLanguage = languageCode;
     final locale = AppConstants.ttsLocales[languageCode] ?? 'hi-IN';
     await _tts?.setLanguage(locale);
   }
