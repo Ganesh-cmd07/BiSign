@@ -45,3 +45,5 @@ app.*.map.json
 /android/app/release
 # Node modules
 node_modules/
+# Python virtual environment
+venv/

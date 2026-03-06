@@ -1,14 +1,29 @@
 import 'dart:async';
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:vosk_flutter/vosk_flutter.dart';
 
 /// SttService
-/// Phase C implementation using offline continuous Speech-to-Text.
+/// Phase C implementation using offline continuous Speech-to-Text via vosk_flutter.
 class SttService {
+  final VoskFlutterPlugin _vosk = VoskFlutterPlugin.instance();
+  Model? _model;
+  Recognizer? _recognizer;
+  SpeechService? _speechService;
   bool _isListening = false;
-  Timer? _simulationTimer;
 
   Future<void> initialize(String languageCode) async {
-    // Phase C: Initialize Vosk plugin and load localized acoustic models 
-    // from assets/vosk/...
+    try {
+      // Phase C: Initialize Vosk plugin and load localized acoustic models 
+      // from assets/vosk/...
+      String modelPath = await ModelLoader()
+          .loadFromAssets('assets/vosk/model-hi.zip');
+      _model = await _vosk.createModel(modelPath);
+      _recognizer = await _vosk.createRecognizer(model: _model!, sampleRate: 16000);
+      debugPrint('Vosk Model Init Success!');
+    } catch (e) {
+      debugPrint('Vosk Error compiling/loading: $e');
+    }
   }
 
   Future<void> startListening({
@@ -16,43 +31,47 @@ class SttService {
     required Function(String) onResult,
     required Function(String) onDone,
   }) async {
-    if (_isListening) return;
+    if (_isListening || _recognizer == null) return;
     _isListening = true;
 
-    // Phase C - Vosk internal structure:
-    // _speechService = await _vosk.createSpeechService(_recognizer!);
-    // _speechService!.onPartial().listen((e) => onResult(e.partial));
-    // _speechService!.onResult().listen((e) => onDone(e.text));
+    try {
+      _speechService = await _vosk.initSpeechService(_recognizer!);
+      
+      _speechService!.onPartial().listen((event) {
+        try {
+          final Map<String, dynamic> data = jsonDecode(event.partial);
+          if (data.containsKey('partial') && data['partial'].toString().isNotEmpty) {
+            onResult(data['partial']);
+          }
+        } catch (_) {}
+      });
 
-    // Simulation for offline testing UI logic
-    int ticks = 0;
-    _simulationTimer = Timer.periodic(const Duration(milliseconds: 600), (timer) {
-      if (!_isListening) {
-        timer.cancel();
-        return;
-      }
-      ticks++;
-      if (ticks == 1) {
-        onResult("i");
-      } else if (ticks == 2) {
-        onResult("i need");
-      } else if (ticks == 3) {
-        onResult("i need water");
-      } else if (ticks == 4) {
-        onDone("i need water please");
-        _isListening = false;
-        timer.cancel();
-      }
-    });
+      _speechService!.onResult().listen((event) {
+        try {
+          final Map<String, dynamic> data = jsonDecode(event.result);
+          if (data.containsKey('text') && data['text'].toString().isNotEmpty) {
+            onDone(data['text']);
+          }
+        } catch (_) {}
+      });
+
+      await _speechService!.start();
+    } catch (e) {
+      debugPrint("Vosk start listening error: $e");
+      _isListening = false;
+    }
   }
 
   Future<void> stopListening() async {
     _isListening = false;
-    _simulationTimer?.cancel();
+    await _speechService?.stop();
   }
 
   void dispose() {
     _isListening = false;
-    _simulationTimer?.cancel();
+    _speechService?.stop();
+    _speechService?.dispose();
+    _recognizer?.dispose();
+    _model?.dispose();
   }
 }

@@ -1,0 +1,5 @@
+hello
+water
+food
+help
+ok
