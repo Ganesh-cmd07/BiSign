@@ -35,13 +35,13 @@ class AppConstants {
   // Asset paths
   static const String signsAssetPath = 'assets/signs/';
   static const String modelsAssetPath = 'assets/models/';
-  static const String tfliteModelPath = 'assets/models/isl_classifier.tflite';
+  static const String tfliteModelPath = 'assets/models/sign_classifier.tflite';
 
   // Model parameters
   static const int numLandmarks = 21;       // Per hand (MediaPipe)
   static const int landmarkDimensions = 3;  // x, y, z
-  static const int inputFeatureSize = 126;  // 21 * 3 * 2 hands
-  static const int numClasses = 263;        // INCLUDE dataset classes
+  static const int inputFeatureSize = 42;    // 21 points * 2 (x, y)
+  static const int numClasses = 93;        // Validated ISL signs in assets/signs/
 
   // Animation
   static const int animationFps = 30;

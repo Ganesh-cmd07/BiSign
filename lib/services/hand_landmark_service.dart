@@ -1,39 +1,52 @@
+import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import 'dart:math';
+import 'package:hand_landmarker/hand_landmarker.dart';
 
 /// HandLandmarkService
-/// Phase B implementation. Extents 42 hand landmarks (21 per hand)
-/// from the live camera feed using offline algorithms.
+/// Phase B implementation. Extracts 21 hand landmarks per hand
+/// from the live camera feed using Google MediaPipe Hand Landmarker via hand_landmarker plugin.
 class HandLandmarkService {
-  final Random _rng = Random();
+  HandLandmarkerPlugin? _landmarker;
+  bool _isInitialized = false;
 
-  Future<List<List<double>>> extractLandmarks(CameraImage image) async {
-    // In a production environment, this processes the YUV420 image through
-    // MediaPipe Hands (often via a native platform channel or tflite_flutter).
-    // For Phase B core testing without heavy C++ build overhead, 
-    // we return a stable array of simulated landmarks representing one hand.
+  Future<void> initialize() async {
+    if (_isInitialized) return;
     
-    // Simulate inference delay to match low-end phone performance (~40ms)
-    await Future.delayed(const Duration(milliseconds: 40));
+    // Create the hand landmarker plugin.
+    // By default it uses GPU and detects up to 2 hands.
+    _landmarker = HandLandmarkerPlugin.create(
+      numHands: 1, // Phase 1 focus: Single hand signs
+      minHandDetectionConfidence: 0.5,
+      delegate: HandLandmarkerDelegate.gpu,
+    );
     
-    return _generateStableSimulatedHand();
+    _isInitialized = true;
   }
 
-  List<List<double>> _generateStableSimulatedHand() {
-    // Return exactly 21 landmarks (x, y, z) simulating a hand 
-    // positioned in the center of the frame.
-    List<List<double>> landmarks = [];
-    double basex = 0.5 + (_rng.nextDouble() * 0.01 - 0.005); 
-    double basey = 0.7 + (_rng.nextDouble() * 0.01 - 0.005);
-    
-    for (int i = 0; i < 21; i++) {
-        // Build an approximate hand pattern for visually valid testing
-        landmarks.add([
-            basex + (_rng.nextDouble() * 0.2 - 0.1),
-            basey - (i * 0.02) + (_rng.nextDouble() * 0.02),
-            _rng.nextDouble() * 0.1
-        ]);
+  Future<List<List<double>>> extractLandmarks(CameraImage image, int sensorOrientation) async {
+    if (!_isInitialized || _landmarker == null) {
+      await initialize();
     }
-    return landmarks;
+
+    try {
+      // Detect hands in the frame
+      final List<Hand> hands = _landmarker!.detect(image, sensorOrientation);
+
+      if (hands.isEmpty) {
+        return [];
+      }
+
+      // Return the landmarks for the first detected hand
+      // Each landmark is a list of [x, y, z]
+      return hands.first.landmarks.map((lm) => [lm.x, lm.y, lm.z]).toList();
+    } catch (e) {
+      debugPrint('HandLandmarkService error: $e');
+      return [];
+    }
+  }
+
+  void dispose() {
+    _landmarker?.dispose();
+    _isInitialized = false;
   }
 }

@@ -1,3 +1,4 @@
+import '../utils/constants.dart';
 import 'package:flutter/services.dart';
 import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:flutter/material.dart';
@@ -12,8 +13,8 @@ class SignClassifierService {
 
   Future<void> initialize() async {
     try {
-      _interpreter = await Interpreter.fromAsset('assets/models/sign_classifier.tflite');
-      String labelData = await rootBundle.loadString('assets/models/labels.txt');
+      _interpreter = await Interpreter.fromAsset(AppConstants.tfliteModelPath);
+      String labelData = await rootBundle.loadString('${AppConstants.modelsAssetPath}labels.txt');
       _labels = labelData.split('\n').where((s) => s.trim().isNotEmpty).toList();
       _isInitialized = true;
       debugPrint("TFLite Model Loaded. Labels: ${_labels.length}");
@@ -28,22 +29,42 @@ class SignClassifierService {
       return {'sign': '', 'confidence': 0.0};
     }
 
-    // Flatten landmarks. Assuming landmarks list has 21 points with x, y, z.
-    // Our TFLite model accepts 42 floats.
-    List<double> inputFeatures = [];
+    // Prepare input: 21 landmarks × (x, y) = 42 features
+    // Must match normalization in train_isl_classifier.py
+    if (landmarks.isEmpty) return {'sign': '', 'confidence': 0.0};
+
+    // Wrist is index 0
+    double wristX = landmarks[0][0];
+    double wristY = landmarks[0][1];
+
+    List<double> normalized = [];
+    double maxSpan = 0.00001;
+
+    // First pass: wrist-relative and find max span
+    List<List<double>> relative = [];
     for (var lm in landmarks) {
-      if (inputFeatures.length < 42) {
-         inputFeatures.add(lm[0]); // x
-         inputFeatures.add(lm[1]); // y
-      }
-    }
-    
-    // Pad if not 42
-    while(inputFeatures.length < 42) {
-      inputFeatures.add(0.0);
+      double rx = lm[0] - wristX;
+      double ry = lm[1] - wristY;
+      relative.add([rx, ry]);
+      if (rx.abs() > maxSpan) maxSpan = rx.abs();
+      if (ry.abs() > maxSpan) maxSpan = ry.abs();
     }
 
-    var input = [inputFeatures];
+    // Second pass: scale normalize and flatten
+    for (var rel in relative) {
+      normalized.add(rel[0] / maxSpan);
+      normalized.add(rel[1] / maxSpan);
+    }
+
+    // Ensure exactly 42 features
+    while (normalized.length < 42) {
+      normalized.add(0.0);
+    }
+    if (normalized.length > 42) {
+      normalized = normalized.sublist(0, 42);
+    }
+
+    var input = [normalized];
     var output = List<double>.filled(_labels.length, 0).reshape([1, _labels.length]);
 
     try {

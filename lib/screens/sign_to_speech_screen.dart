@@ -83,8 +83,11 @@ class _SignToSpeechScreenState extends State<SignToSpeechScreen>
       _isProcessing = true;
 
       try {
-        // Extract landmarks using HandLandmarkService (mock in Phase A)
-        final landmarks = await _landmarkService.extractLandmarks(image);
+        // Extract landmarks using HandLandmarkService
+        final landmarks = await _landmarkService.extractLandmarks(
+          image,
+          _cameraController!.description.sensorOrientation,
+        );
 
         if (landmarks.isNotEmpty) {
           // Classify the sign
