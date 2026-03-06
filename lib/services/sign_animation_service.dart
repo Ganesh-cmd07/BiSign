@@ -5,31 +5,38 @@ import 'package:flutter/services.dart';
 import '../utils/constants.dart';
 
 /// SignAnimationService
-/// Loads ISL sign JSON landmark data and provides frames for animation.
-/// Phase A: Returns mock frames for testing.
-/// Phase C: Will load real JSON landmark files from assets/signs/.
+/// Loads ISL sign JSON landmark data from assets/signs/<word>.json and
+/// provides per-word frame lists for the SignCanvas animation renderer.
+///
+/// ⚠️ Real sign JSON files are required in assets/signs/ for production use.
+/// Until then, a procedural fallback animation is generated per word so the
+/// UI remains functional during development.
 class SignAnimationService {
   bool _isInitialized = false;
   final Map<String, List<Map<String, dynamic>>> _signCache = {};
 
   Future<void> initialize() async {
-    // Phase C: Preload sign index from assets
-    // For now, just mark initialized
+    // Mark initialized. Real sign files from assets/signs/ are loaded
+    // lazily on first request for each word (see getSignFrames).
     _isInitialized = true;
-    debugPrint('SignAnimationService: Phase A mock initialized');
+    debugPrint('SignAnimationService: Ready. Sign files loaded from assets/signs/ on demand.');
   }
 
-  /// Get frames for a given word.
-  /// Returns list of frame maps: [{left_hand: [...], right_hand: [...]}, ...]
+  /// Get animation frames for a given word.
+  /// Returns list of frame maps: [{right_hand: [...], left_hand: [...]}, ...]
+  ///
+  /// Loads from assets/signs/<word>.json if available.
+  /// Falls back to a procedurally generated animation if the file is missing.
   Future<List<Map<String, dynamic>>> getSignFrames(String word) async {
     if (!_isInitialized) return [];
 
-    final key = word.toLowerCase();
+    final key = word.toLowerCase().trim();
+    if (key.isEmpty) return [];
 
-    // Return cached sign if available
+    // Return cached sign if already loaded
     if (_signCache.containsKey(key)) return _signCache[key]!;
 
-    // Phase C: Try to load from assets/signs/<word>.json
+    // Try to load real sign data from assets/signs/<word>.json
     try {
       final jsonStr = await rootBundle
           .loadString('${AppConstants.signsAssetPath}$key.json');
@@ -38,18 +45,26 @@ class SignAnimationService {
           .map((f) => f as Map<String, dynamic>)
           .toList();
       _signCache[key] = frames;
+      debugPrint('SignAnimationService: Loaded real sign for "$key" (${frames.length} frames)');
       return frames;
     } catch (_) {
-      // Fallback to mock frames for Phase A
-      final frames = _generateMockFrames(word);
+      // Real sign file not found — use procedural fallback animation
+      debugPrint(
+        'SignAnimationService: No sign file found for "$key". '
+        'Using fallback animation. Add assets/signs/$key.json to fix.',
+      );
+      final frames = _generateFallbackFrames(key);
       _signCache[key] = frames;
       return frames;
     }
   }
 
-  /// Generate mock hand landmark frames for Phase A testing.
-  /// Creates a simple wave animation with 30 frames.
-  List<Map<String, dynamic>> _generateMockFrames(String word) {
+  /// Clears the sign cache. Useful when assets are updated at runtime.
+  void clearCache() => _signCache.clear();
+
+  /// Generates a procedural fallback hand animation (30 frames) for a word
+  /// that doesn't have a real JSON sign file yet.
+  List<Map<String, dynamic>> _generateFallbackFrames(String word) {
     const frameCount = 30;
     return List.generate(frameCount, (frameIdx) {
       final t = frameIdx / frameCount;

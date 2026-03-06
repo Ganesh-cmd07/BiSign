@@ -18,11 +18,13 @@ class _SpeechToSignScreenState extends State<SpeechToSignScreen>
     with SingleTickerProviderStateMixin {
   bool _isListening = false;
   bool _isAnimating = false;
+  bool _sttUsingFallback = false;   // true when Vosk fell back to Hindi
   String _recognizedText = '';
   String _islOrderedText = '';
   List<String> _signWords = [];
   int _currentSignIndex = 0;
   List<Map<String, dynamic>> _currentFrames = [];
+
 
   final SttService _stt = SttService();
   final IslGrammarService _grammar = IslGrammarService();
@@ -46,6 +48,10 @@ class _SpeechToSignScreenState extends State<SpeechToSignScreen>
   Future<void> _initServices() async {
     await _stt.initialize(widget.selectedLanguage);
     await _animation.initialize();
+    // Check if STT fell back to Hindi due to missing language model
+    if (mounted) {
+      setState(() => _sttUsingFallback = _stt.usingFallback);
+    }
   }
 
   Future<void> _startListening() async {
@@ -141,6 +147,9 @@ class _SpeechToSignScreenState extends State<SpeechToSignScreen>
         child: SafeArea(
           child: Column(
             children: [
+              // ── Language Fallback Warning Banner ──────────
+              if (_sttUsingFallback) _buildFallbackWarningBanner(),
+
               // ── Top Bar ────────────────────────────────────
               _buildTopBar(),
 
@@ -163,6 +172,31 @@ class _SpeechToSignScreenState extends State<SpeechToSignScreen>
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildFallbackWarningBanner() {
+    final langName = AppConstants.languageNames[widget.selectedLanguage] ?? widget.selectedLanguage;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      color: const Color(0xFFB45309), // amber-700
+      child: Row(
+        children: [
+          const Icon(Icons.warning_amber_rounded, color: Colors.white, size: 18),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              '$langName model not available. Using Hindi (हिन्दी) for speech recognition.',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
